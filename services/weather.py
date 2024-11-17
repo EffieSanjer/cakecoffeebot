@@ -3,16 +3,32 @@ import os
 import requests
 
 
-def get_weather(city: str):
-    response = requests.get(f"https://api.openweathermap.org/data/2.5/weather?lang=ru&units=metric&"
-                            f"q={city}&appid={os.environ['WEATHER_API_KEY']}")
+def get_weather(city: str = None, lat: float = None, lon: float = None):
+    # TODO: closest big city
+    query = {"q": "Москва,Россия"}
+
+    if city:
+        query = {"q": f"{city},Россия"}
+    elif lat and lon:
+        query = {
+            "lat": lat,
+            "lon": lon
+        }
+
+    response = requests.get(f"https://api.openweathermap.org/data/2.5/weather", {
+        "appid": os.environ['WEATHER_API_KEY'],
+        "lang": "ru",
+        "units": "metric",
+        **query
+    })
 
     data = response.json()
+    print(data)
 
     return {
+        "city": data['name'],
         "weather": data['weather'][0]['description'],
-        "temp": data['main']['temp'],
-        "feels_like": data['main']['feels_like'],
+        "temp": round(float(data['main']['temp'])),
+        "feels_like": round(float(data['main']['feels_like'])),
         "wind": data['wind']['speed'],
     }
-
