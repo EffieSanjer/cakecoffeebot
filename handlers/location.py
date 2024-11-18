@@ -1,5 +1,4 @@
-from aiogram import Router, F
-from aiogram.filters import StateFilter
+from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
@@ -13,21 +12,33 @@ router = Router()
 
 class LocationState(StatesGroup):
     choosing_city = State()
-    choosing_subway = State()
+    choosing_address = State()
 
 
 @router.message(LocationState.choosing_city, F.location)
 async def handle_geolocation(message: Message, state: FSMContext, today: str):
     lat = message.location.latitude
     lon = message.location.longitude
+
     weather = get_weather(lat=lat, lon=lon)
     await state.update_data(city=weather['city'])
 
-    await message.answer(f"Твой город {weather['city']}!\n"
+    location = get_location(city=weather['city'], lat=lat, lon=lon)
+    await state.update_data(address=location)
+
+    await state.set_state(LocationState.choosing_address)
+
+    await message.answer(f"Твой адрес: {location}!\n"
                          f"Сегодня {today}, {weather['weather']}, {weather['temp']}℃.\n"
-                         f"Отличный день, чтобы прогуляться с кофе!")
-    await message.answer("Начнем с простого: в район какого метро Вы хотите отправиться?")
-    await state.set_state(LocationState.choosing_subway)
+                         f"Ищу заведения в 10-15 минутах ходьбы...",
+                         reply_markup=types.ReplyKeyboardRemove())
+
+    places = get_places(location['geometry']['lat'], location['geometry']['lng'], 15)
+    nl = '\n'.join(map(str, places))
+
+    await message.answer(
+        text=f"Вот список ближайших мест:\n{nl}",
+    )
 
 
 @router.message(LocationState.choosing_city, F.text)
@@ -38,20 +49,22 @@ async def handle_text_location(message: Message, state: FSMContext, today: str):
     try:
         weather = get_weather(city=city)
 
-        await message.answer(f"Твой город {city}!\n"
+        await message.answer(f"Твой город: {city}!\n"
                              f"Сегодня {today}, {weather['weather']}, {weather['temp']}℃.\n"
-                             f"Отличный день, чтобы прогуляться с кофе!")
+                             f"Отличный день, чтобы прогуляться с кофе!",
+                             reply_markup=types.ReplyKeyboardRemove())
     except:
-        await message.answer("К сожалению, я не вижу какая сегодня погода, но все равно могу помочь!")
+        await message.answer("К сожалению, я не вижу какая сегодня погода, но все равно могу помочь!",
+                             reply_markup=types.ReplyKeyboardRemove())
 
     await message.answer("Начнем с простого: в район какого метро Вы хотите отправиться?")
-    await state.set_state(LocationState.choosing_subway)
+    await state.set_state(LocationState.choosing_address)
 
 
-@router.message(LocationState.choosing_subway, F.text)
+@router.message(LocationState.choosing_address, F.text)
 async def handle_subway(message: Message, state: FSMContext):
     subway = message.text
-    await state.update_data(subway=subway)
+    await state.update_data(address=subway)
 
     user_data = await state.get_data()
     try:

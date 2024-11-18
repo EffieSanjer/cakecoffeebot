@@ -1,6 +1,5 @@
-import os
-
 import requests
+from decouple import config
 
 
 def get_location(city: str = "Москва", location: str = None, lat: float = None, lon: float = None):
@@ -8,7 +7,7 @@ def get_location(city: str = "Москва", location: str = None, lat: float = 
         location = f"{lat},{lon}"
 
     response = requests.get(f"https://api.opencagedata.com/geocode/v1/json", {
-        "key": os.environ['GEO_API_KEY'],
+        "key": config('GEO_API_KEY'),
         "language": "ru",
         "no_annotations": 1,
         "limit": 1,

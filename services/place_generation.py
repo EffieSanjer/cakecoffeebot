@@ -1,4 +1,5 @@
 import math
+import random
 from datetime import datetime
 
 import pytz
@@ -7,7 +8,7 @@ from models import get_places_by_point
 
 
 def get_daytime():
-    # for other timezones
+    # for other timezones (можно просто взять из сообщения пользователя)
     # tz = tzwhere.tzwhere()
     # timeZoneStr = tz.tzNameAt(lat, lng)
 
@@ -41,4 +42,4 @@ def get_places(center_lat, center_lon, minutes):
         category_id = 1  # breakfasts
 
     places = get_places_by_point(category_id, center_lat, center_lon, get_radius(center_lat, minutes))
-    return places
+    return random.choices(places, k=10)

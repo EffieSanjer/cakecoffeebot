@@ -1,6 +1,5 @@
-import os
-
 import requests
+from decouple import config
 
 
 def get_weather(city: str = None, lat: float = None, lon: float = None):
@@ -16,7 +15,7 @@ def get_weather(city: str = None, lat: float = None, lon: float = None):
         }
 
     response = requests.get(f"https://api.openweathermap.org/data/2.5/weather", {
-        "appid": os.environ['WEATHER_API_KEY'],
+        "appid": config('WEATHER_API_KEY'),
         "lang": "ru",
         "units": "metric",
         **query
