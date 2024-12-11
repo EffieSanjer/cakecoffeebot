@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytz
 
-from models import get_places_by_point
+from models import get_places_by_point, get_place_by_id
 
 
 def get_daytime():
@@ -35,11 +35,21 @@ def get_radius(lat, minutes):
     return r
 
 
-def get_places(center_lat, center_lon, minutes):
+def get_places(center_lat, center_lon, minutes=13):
     category_id = 2  # dinners
     now = get_daytime()
-    if now.hour < 14:
+    if now.hour < 15:
         category_id = 1  # breakfasts
 
     places = get_places_by_point(category_id, center_lat, center_lon, get_radius(center_lat, minutes))
-    return random.choices(places, k=10)
+    return random.sample(places, 10)
+
+
+def get_place_info(place_id):
+    place = get_place_by_id(place_id)
+    msg = (f"<b>{place.title}</b>\n"
+           f"{place.address}\n"
+           f"{place.avg_bill}\n"
+           f"Заметка: {place.note}\n"
+           f"2ГИС: https://2gis.ru/spb/geo/{place.lon},{place.lat}")
+    return msg

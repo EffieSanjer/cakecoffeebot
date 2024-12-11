@@ -19,10 +19,9 @@ def get_weather(city: str = None, lat: float = None, lon: float = None):
         "lang": "ru",
         "units": "metric",
         **query
-    })
+    }, timeout=(5, 20))
 
     data = response.json()
-    print(data)
 
     return {
         "city": data['name'],
