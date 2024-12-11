@@ -1,9 +1,9 @@
-from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from sqlalchemy.orm import DeclarativeBase, relationship, Session
-from sqlalchemy import Column, Integer, String, Numeric, ForeignKey, create_engine, and_, type_coerce, Float, \
-    ColumnElement, func
-
 import logging
+from datetime import datetime, timedelta
+
+from sqlalchemy import Column, Integer, String, Numeric, ForeignKey, create_engine, func, DateTime, asc
+from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy.orm import DeclarativeBase, relationship, Session
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -67,6 +67,43 @@ def get_places_by_point(category_id, center_lat, center_lon, r):
             Place.is_point_in_circle(center_lat, center_lon, r)
         ).all()
     return places
+
+
+def get_place_by_id(place_id):
+    with (Session(autoflush=False, bind=engine) as db):
+        place = db.get(Place, place_id)
+    return place
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    datetime = Column(DateTime, default=datetime.utcnow, index=True)
+    address = Column(String)
+    description = Column(String)
+    tickets = Column(String)
+
+    def __str__(self):
+        return self.title
+
+
+def create_event(info):
+    with (Session(autoflush=False, bind=engine) as db):
+        new_event = Event(**info)
+        db.add(new_event)
+        db.commit()
+        db.refresh(new_event)
+    return new_event
+
+def get_events():
+    with (Session(autoflush=False, bind=engine) as db):
+        today = datetime.today()
+        events = db.query(Event).filter(
+            Event.datetime.between(today, today + timedelta(31))
+        ).order_by(Event.datetime).all()
+    return events
 
 
 # Base.metadata.create_all(bind=engine)
