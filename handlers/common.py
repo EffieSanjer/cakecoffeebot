@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from handlers.location import LocationState
+from services.geolocation import get_cats_names
 
 router = Router()
 
@@ -30,6 +31,18 @@ async def cmd_start(message: types.Message, state: FSMContext):
 
     await message.answer("Напиши свой город или отправь геолокацию, чтобы я смог найти тебя", reply_markup=location_button())
     await state.set_state(LocationState.choosing_city)
+
+
+@router.message(Command("add"))
+async def cmd_add_location(message: types.Message, state: FSMContext):
+    await state.clear()
+
+    await message.answer("Понял!\n"
+                         "Отправь мне <b>ссылку на 2ГИС, название категории и заметку</b> (если есть), "
+                         "каждое на новой строке\n\n"
+                         f"Список доступных категорий:\n• {get_cats_names()}")
+
+    await state.set_state(LocationState.creating_place)
 
 
 @router.message(Command("clear"))

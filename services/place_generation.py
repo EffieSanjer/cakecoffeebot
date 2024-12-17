@@ -16,7 +16,7 @@ def get_daytime():
 
 
 def get_radius(lat, minutes):
-    speed = 85  # средняя скорость человека в м/мин
+    speed = 75  # средняя скорость человека в м/мин
     distance = speed * minutes  # расстояние за количество минут
 
     one_degree_lat_km = 111.32
@@ -35,21 +35,22 @@ def get_radius(lat, minutes):
     return r
 
 
-def get_places(center_lat, center_lon, minutes=13):
+def get_places(center_lat, center_lon, minutes=13, page=1):
     category_id = 2  # dinners
     now = get_daytime()
     if now.hour < 15:
         category_id = 1  # breakfasts
 
-    places = get_places_by_point(category_id, center_lat, center_lon, get_radius(center_lat, minutes))
-    return random.sample(places, 10)
+    paginator = get_places_by_point(category_id, center_lat, center_lon, get_radius(center_lat, minutes), page)
+    print(paginator)
+    return paginator
 
 
 def get_place_info(place_id):
     place = get_place_by_id(place_id)
     msg = (f"<b>{place.title}</b>\n"
            f"{place.address}\n"
-           f"{place.avg_bill}\n"
+           f"Средний чек: {place.avg_bill}\n"
            f"Заметка: {place.note}\n"
-           f"2ГИС: https://2gis.ru/spb/geo/{place.lon},{place.lat}")
+           f"2ГИС: https://2gis.ru/spb/geo/{place.gis_id}")
     return msg
