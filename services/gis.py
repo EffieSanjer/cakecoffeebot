@@ -53,7 +53,7 @@ def add_2gis_location(link, cats, note):
             avg_bill = re.search(r'\d{3,}', avg_bill)[0]
 
     new_place = create_place({
-        'title': formatted['name'],
+        'title': re.search(f"(.+),.+$", formatted['name']).group(1),
         'address': formatted['address_name'] if 'address_name' in formatted else 'None',
         'city': city,
         'avg_bill': avg_bill,
