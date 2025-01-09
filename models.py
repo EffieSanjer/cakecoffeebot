@@ -85,7 +85,7 @@ def get_places_by_point(category_id, center_lat, center_lon, r, page=1):
         )
         # places.order_by(func.random())
 
-    page = SqlalchemyOrmPage(places, page=page, items_per_page=3)
+    page = SqlalchemyOrmPage(places, page=page, items_per_page=10)
 
     return {
         'prev_page': page.previous_page,
