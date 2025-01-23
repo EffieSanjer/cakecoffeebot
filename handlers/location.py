@@ -214,7 +214,7 @@ async def handle_new_location(message: Message, state: FSMContext):
     await state.clear()
 
 
-@router.message()
+@router.message(F.text)
 async def handle_subway_incorrectly(message: Message):
     await message.answer(
         text="Я Вас не понял, давайте попробуем еще раз.\n"

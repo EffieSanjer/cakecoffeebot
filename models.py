@@ -103,7 +103,7 @@ def get_place_by_id(place_id):
 
 def create_place(info, cats: list):
     with (Session(autoflush=False, bind=engine) as db):
-        instance = db.query(Place).filter_by(lat=info['lat'], lon=info['lon']).first()
+        instance = db.query(Place).filter_by(title=info['title'], lat=info['lat'], lon=info['lon']).first()
         categories = db.query(Category).filter(Category.name.in_(cats)).all()
 
         if instance:
