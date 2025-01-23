@@ -1,8 +1,8 @@
-from aiogram import Router, types
-from aiogram.filters import StateFilter
+from aiogram import Router, types, F
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from decouple import config
 
 from handlers.location import LocationState
 from services.geolocation import get_cats_names
@@ -33,7 +33,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.set_state(LocationState.choosing_city)
 
 
-@router.message(Command("add"))
+@router.message(Command("add"), F.chat.id == int(config('ADMIN_TG_ID')))
 async def cmd_add_location(message: types.Message, state: FSMContext):
     await state.clear()
 
@@ -43,6 +43,23 @@ async def cmd_add_location(message: types.Message, state: FSMContext):
                          f"Список доступных категорий:\n• {get_cats_names()}")
 
     await state.set_state(LocationState.creating_place)
+
+
+@router.message(Command("add"), F.chat.id != int(config('ADMIN_TG_ID')))
+async def cmd_add_location(message: types.Message, state: FSMContext):
+    await state.clear()
+    await message.answer("Извините, Вам сюда нельзя!")
+
+
+@router.message(Command("rate"))
+async def cmd_rate_location(message: types.Message, state: FSMContext):
+    await state.clear()
+
+    # TODO: places' title search
+    await message.answer("Понял!\n"
+                         "Отправь мне <b>ссылку на 2ГИС и вашу оценку (до 5)</b> на следующей строке")
+
+    await state.set_state(LocationState.rating_place)
 
 
 @router.message(Command("clear"))

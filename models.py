@@ -51,7 +51,6 @@ class Place(Base):
     address = Column(String)
     city = Column(String)
     avg_bill = Column(String)
-    rating = Column(Numeric, default=0)
 
     note = Column(String)
     gis_id = Column(String, index=True)
@@ -60,9 +59,14 @@ class Place(Base):
     lat = Column(Numeric, index=True)
 
     categories = relationship("Category", secondary=category_place_table, back_populates='places')
+    ratings = relationship("Rating", back_populates='places')
 
     def __str__(self):
         return self.title
+
+    def get_rating(self, user_id):
+        with (Session(autoflush=False, bind=engine) as db):
+            return round(db.query(Rating).filter_by(user_id=user_id, place_id=self.id).first().rating, 1) or 0
 
     @hybrid_method
     def lat_diff(self, center_lat):
@@ -120,6 +124,33 @@ def create_place(info, cats: list):
             db.commit()
             db.refresh(new_place)
         return new_place
+
+
+class Rating(Base):
+    __tablename__ = "places_rating"
+
+    id = Column(Integer, primary_key=True)
+    place_id = Column(Integer, ForeignKey('places.id'), index=True)
+    user_id = Column(String, index=True)
+
+    # TODO: few ratings
+    rating = Column(Numeric, default=0)
+
+    places = relationship("Place", back_populates='ratings')
+
+
+def create_rating(user_id, gis_id, rating):
+    with (Session(autoflush=False, bind=engine) as db):
+        place = db.query(Place).filter_by(gis_id=gis_id).first()
+
+        if place:
+            new_rate = Rating(user_id=user_id, place_id=place.id, rating=rating)
+            db.add(new_rate)
+            db.commit()
+            db.refresh(new_rate)
+            return new_rate
+
+        return
 
 
 class Event(Base):

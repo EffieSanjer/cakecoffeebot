@@ -5,7 +5,7 @@ from typing import Optional, Union
 import requests
 from decouple import config
 
-from models import Place, get_categories, create_place
+from models import Place, get_categories, create_place, create_rating
 from .gis import get_2gis_location, add_2gis_location
 
 
@@ -98,3 +98,9 @@ def add_new_location(link: str, cats: Optional[Union[str, list]], note: str = No
     }, cats.split(','))
 
     return new_place
+
+
+def rate_location(user: str, place_link: str, rating: str):
+    gis_id = re.search(r"\d{4,}", place_link)[0]
+
+    return create_rating(user, gis_id, rating)

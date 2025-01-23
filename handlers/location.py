@@ -7,7 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from decouple import config
 
 from models import Place
-from services.geolocation import get_location, get_map_image, add_new_location, get_place_index
+from services.geolocation import get_location, get_map_image, add_new_location, get_place_index, rate_location
 from services.place_generation import get_places, get_place_info
 from services.weather import get_weather
 
@@ -55,6 +55,7 @@ class LocationState(StatesGroup):
     choosing_address = State()
     showing_places = State()
     creating_place = State()
+    rating_place = State()
 
 
 @router.message(LocationState.choosing_city, F.location)
@@ -170,7 +171,7 @@ async def callbacks_num_change_fab(
 ):
     user_data = await state.get_data()
     await callback.message.edit_caption(
-        caption=get_place_info(callback_data.id),
+        caption=get_place_info(callback_data.id, str(callback.from_user.id)),
         reply_markup=get_keyboard_fab(user_data.get('paginator'), callback_data.id))
     await callback.answer()
 
@@ -211,6 +212,16 @@ async def handle_new_location(message: Message, state: FSMContext):
                          f"<b>{new_loc.title}</b>\n"
                          f"{new_loc.address}, {new_loc.city}")
 
+    await state.clear()
+
+
+@router.message(LocationState.rating_place, F.text)
+async def handle_rate_location(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    msg = message.text.split('\n')
+    rating = rate_location(str(user_id), *msg)
+
+    await message.answer(f"Оценка добавлена успешно.")
     await state.clear()
 
 

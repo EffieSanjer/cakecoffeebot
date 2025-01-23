@@ -46,11 +46,12 @@ def get_places(center_lat, center_lon, minutes=13, page=1):
     return paginator
 
 
-def get_place_info(place_id):
+def get_place_info(place_id, user_id):
     place = get_place_by_id(place_id)
     msg = (f"<b>{place.title}</b>\n"
            f"{place.address}\n"
            f"Средний чек: {place.avg_bill}\n"
+           f"Ваша оценка: {place.get_rating(user_id)}\n"
            f"Заметка: {place.note}\n"
            f"2ГИС: https://2gis.ru/spb/geo/{place.gis_id}")
     return msg
