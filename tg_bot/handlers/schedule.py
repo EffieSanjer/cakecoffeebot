@@ -1,13 +1,11 @@
 import locale
 
 from aiogram import Router, types, F
-from aiogram.filters import StateFilter
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from handlers.location import LocationState
 from services.schedule import get_closest_events, add_event
 
 router = Router()

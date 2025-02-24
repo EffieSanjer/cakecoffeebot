@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from models import get_events, create_event
+from use_cases.events_use_case import event_use_case
 
 
 def get_closest_events():
-    events = get_events()
+    events = event_use_case.get_events()
     return events
 
 
 def add_event(info: list):
-    event = create_event({
+    event = event_use_case.create_event({
         'title': info[0],
         'datetime': datetime.strptime(info[1], '%d.%m.%Y %H:%M'),
         'address': info[2],
