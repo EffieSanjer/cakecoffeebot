@@ -24,11 +24,11 @@ class PlaceDao(BaseDao):
     model = Place
 
     @classmethod
-    async def create_place(cls, session: AsyncSession, categories: list[str], place_info: BaseModel) -> Place:
+    async def create_place(cls, session: AsyncSession, categories_names: list[str], place_info: BaseModel) -> Place:
 
         place_data = place_info.model_dump(exclude_unset=True)
         place = await cls.get_one_or_none(session=session, filters=place_info)
-        categories = await CategoryDao.get_by_names(session=session, names=categories)
+        categories = await CategoryDao.get_by_names(session=session, names=categories_names)
 
         # TODO: if not instance Exception
         if place:
@@ -69,12 +69,13 @@ class PlaceDao(BaseDao):
 
         query = (
             select(cls.model)
+            .options(joinedload(cls.model.categories))
             .filter(cls.model.categories.any(id=category_id))
             .filter(distance <= radius)
         )
 
         result = await session.execute(query)
-        return result.scalars().all()
+        return result.scalars().unique().all()
 
 
 class RatingDao(BaseDao):
