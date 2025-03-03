@@ -26,6 +26,7 @@ class PlaceCreatePydantic(BaseModel):
 
 
 class PlacePydantic(BaseModel):
+    id: int
     title: str
     address: str
     city: str

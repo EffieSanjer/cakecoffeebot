@@ -12,22 +12,23 @@ CATEGORIES_DATA = [
     CategoryPydantic(name="Breakfasts"),
     CategoryPydantic(name="Lunches")
 ]
+
 PLACES_DATA = [
     PlaceCreatePydantic(
         title='Test Place',
         address='testing st. 234',
         city='St. Petersburg',
         gis_id='1234567898765',
-        lat=30.352579,
-        lon=59.944117
+        lon=30.352579,
+        lat=59.944117
     ),
     PlaceCreatePydantic(
         title='Test Place 2',
         address='testing st. 4567',
         city='St. Petersburg',
         gis_id='23456543',
-        lat=30.353427,
-        lon=59.931805
+        lon=30.353427,
+        lat=59.931805
     )
 ]
 
@@ -63,8 +64,8 @@ async def places_fixture(session: AsyncSession, categories_fixture: list[Categor
 
 @pytest.mark.asyncio
 class TestPlaceDao:
-    CENTER_LAT = 30.359801
-    CENTER_LON = 59.944502
+    CENTER_LON = 30.359801
+    CENTER_LAT = 59.944502
     RADIUS = 0.008  # Примерно 10 минут пешком
     CATEGORY_ID = 1  # ID категории
 
@@ -100,8 +101,8 @@ class TestPlaceDao:
         assert place is not None
         assert place.title == 'Test Place'
         assert place.gis_id == '1234567898765'
-        assert place.lon == 59.944117
-        assert place.lat == 30.352579
+        assert place.lat == 59.944117
+        assert place.lon == 30.352579
         assert len(place.categories) > 0
 
     async def test_get_places_within_radius(self, session: AsyncSession, places_fixture: list[Place]):
@@ -111,9 +112,9 @@ class TestPlaceDao:
         places = await PlaceDao.get_places_within_radius(
             session,
             self.CATEGORY_ID,
-            self.CENTER_LAT,
-            self.CENTER_LON,
-            self.RADIUS
+            center_lat=self.CENTER_LAT,
+            center_lon=self.CENTER_LON,
+            radius=self.RADIUS
         )
 
         assert len(places) == 1
