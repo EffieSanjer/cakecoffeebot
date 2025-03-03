@@ -31,7 +31,7 @@ def get_2gis_location(city: str = "Москва", location: str = None, lat: flo
     }
 
 
-def add_2gis_location(link, cats, note):
+async def add_2gis_location(link, cats, note=None):
     gis_id = re.search(r"\d{4,}", link)[0]
 
     response = requests.get(f"https://catalog.api.2gis.com/3.0/items/byid", {
@@ -52,7 +52,7 @@ def add_2gis_location(link, cats, note):
         if avg_bill is not None:
             avg_bill = re.search(r'\d{3,}', avg_bill)[0]
 
-    new_place = place_use_case.create_place({
+    new_place = await place_use_case.create_place({
         'title': re.search(f"(.+),.+$", formatted['name']).group(1),
         'address': formatted['address_name'] if 'address_name' in formatted else 'None',
         'city': city,

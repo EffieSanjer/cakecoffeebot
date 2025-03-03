@@ -47,9 +47,9 @@ class PlaceUseCase:
         results = await PlaceDao.get_places_within_radius(
             session,
             category_id,
-            center_lat,
-            center_lon,
-            cls.get_radius(minutes)
+            center_lat=center_lat,
+            center_lon=center_lon,
+            radius=cls.get_radius(minutes)
         )
 
         return [PlacePydantic.model_validate(item).model_dump() for item in results]

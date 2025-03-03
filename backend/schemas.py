@@ -43,8 +43,23 @@ class PlacePydantic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class SimplifiedPlacePydantic(BaseModel):
+    id: int
+    title: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RatingCreatePydantic(BaseModel):
+    user_id: int
+    place_gis_id: str
+    rating: float
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class RatingPydantic(BaseModel):
-    # place: PlacePydantic
+    place: SimplifiedPlacePydantic
     rating: float
 
     model_config = ConfigDict(from_attributes=True)

@@ -18,7 +18,7 @@ class CategoryUseCase:
         results = [CategoryPydantic.model_validate(item).model_dump() for item in categories]
 
         if by_names:
-            return '\n'.join([_['name'] for _ in results])
+            return '\n• '.join([_['name'] for _ in results])
         return results
 
 

@@ -1,7 +1,11 @@
+import json
+import re
+
 import requests
 
 from backend.config import settings
-from services.gis import get_2gis_location
+from services.gis import get_2gis_location, add_2gis_location
+from use_cases.places_use_case import place_use_case
 
 
 def get_place_index(page, total, i):
@@ -52,3 +56,40 @@ def get_map_image(places: list, lat: float = None, lon: float = None, page=1):
     return None
 
 
+async def add_new_location(link: str, cats: str, note: str = None):
+    if settings.GIS_API_KEY:
+        return await add_2gis_location(link, cats.title(), note)
+
+    response = requests.get(link, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"}, timeout=(5, 20))
+
+    data = re.search(r'{"\d{6,}":{"data":(.*?),"meta"', response.text).group(1)
+    formatted = json.loads(data)
+
+    city = next((item["name"] for item in formatted['adm_div'] if item["type"] == "city"), None)
+    avg_bill = None
+
+    if 'attribute_groups' in formatted:
+        for attr in formatted['attribute_groups']:
+            avg_bill = next(
+                (item["name"] for item in attr['attributes'] if item["tag"] == "food_service_avg_price"),
+                None)
+            if avg_bill is not None:
+                avg_bill = re.search(r'\d{3,}', avg_bill)[0]
+                break
+
+    new_place = await place_use_case.create_place(
+        place_data={
+            'title': re.search(f"^([^,]+)", formatted['name']).group(1),
+            'address': formatted['address_name'] if 'address_name' in formatted else 'None',
+            'city': city,
+            'avg_bill': avg_bill,
+            'gis_id': formatted['id'],
+            'lon': formatted['point']['lon'],
+            'lat': formatted['point']['lat'],
+            'note': note if note is not None else None
+        },
+        categories=cats.title().split(','))
+
+    return new_place

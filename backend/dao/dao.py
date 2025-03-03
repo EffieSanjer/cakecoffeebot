@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -88,10 +88,12 @@ class RatingDao(BaseDao):
             rating_info: BaseModel):
 
         info = rating_info.model_dump(exclude_unset=True)
-        place = await PlaceDao.get_one_or_none(session=session, gis_id=info['gis_id'])
+        FilterPlace = create_model("FilterPlace", gis_id=(str, ...))
+        place = await PlaceDao.get_one_or_none(session, FilterPlace(gis_id=info['place_gis_id']))
 
         if place:
-            new_rate = cls.model(**info)
+            info.pop('place_gis_id')
+            new_rate = cls.model(place=place, **info)
             session.add(new_rate)
 
             await session.commit()
