@@ -68,7 +68,7 @@ celerybeat-schedule
 celerybeat.pid
 
 # Environments
-backend/.env
+.env
 .venv
 env/
 venv/
@@ -84,4 +84,5 @@ venv.bak/
 .idea/
 
 *.db
-backend/config.py
+config.py
+/scripts
