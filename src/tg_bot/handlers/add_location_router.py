@@ -3,7 +3,9 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot import logger
 from src.config import settings
+from src.db.exceptions import PlaceAlreadyExistsException
 from src.services.geolocation import add_new_location
 from src.tg_bot.fsm import LocationState
 from src.core.categories_use_case import category_use_case
@@ -34,12 +36,19 @@ async def cmd_add_location(message: Message, state: FSMContext):
 @router.message(LocationState.creating_place, F.text)
 async def creating_place(message: Message, state: FSMContext):
     msg = message.text
-    new_place = await add_new_location(*msg.split('\n'))
 
-    if new_place is not None:
+    try:
+        new_place = await add_new_location(*msg.split('\n'))
         await message.answer(f"<b>{new_place['title']}</b> успешно добавлено на карту!")
-        await state.clear()
-    else:
+
+    except PlaceAlreadyExistsException as e:
+        logger.error(f'PlaceExists error: {e}')
+        await message.answer(f"Заведение уже добавлено на карту!")
+
+    except Exception as e:
+        logger.error(f'Unknown error: {e}')
         await message.answer(f"Что-то пошло не так, попробуйте еще раз!")
 
+    finally:
+        await state.clear()
 

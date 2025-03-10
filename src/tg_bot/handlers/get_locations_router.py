@@ -1,7 +1,9 @@
+import httpx
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
+from src.bot import logger
 from src.services.geolocation import get_location
 from src.services.weather import get_weather
 from src.tg_bot.fsm import LocationState
@@ -16,20 +18,26 @@ async def handle_geolocation(message: Message, state: FSMContext, today: str):
     lat = message.location.latitude
     lon = message.location.longitude
 
-    weather = get_weather(lat=lat, lon=lon)
-    await state.update_data(city=weather['city'])
+    try:
+        weather = await get_weather(lat=lat, lon=lon)
+        await state.update_data(city=weather['city'])
 
-    location = get_location(city=weather['city'], lat=lat, lon=lon)
-    await state.update_data(address={'lat': lat, 'lon': lon})
+        location = await get_location(city=weather['city'], lat=lat, lon=lon)
+        await state.update_data(address={'lat': lat, 'lon': lon})
 
-    await state.set_state(LocationState.choosing_address)
+        await state.set_state(LocationState.choosing_address)
 
-    await message.answer(
-        f"Твой адрес: {location['name']}!\n "
-        f"Сегодня {today}, {weather['weather']}, {weather['temp']}℃.\n"
-        f"Ищу заведения в 10-15 минутах ходьбы...",
-        reply_markup=ReplyKeyboardRemove()
-    )
+        await message.answer(
+            f"Твой адрес: {location['name']}!\n "
+            f"Сегодня {today}, {weather['weather']}, {weather['temp']}℃.\n\n"
+            f"Ищу заведения в 10-15 минутах ходьбы...",
+            reply_markup=ReplyKeyboardRemove()
+        )
+    except httpx.HTTPStatusError as e:
+        logger.error(f'API error: {e}')
+        await message.answer(f"Кажется, сегодня не работаю(\nЗагляните в другой день")
+        return
+
     await send_places_on_map(message, lat, lon, state)
 
 
@@ -39,7 +47,7 @@ async def handle_text_location(message: Message, state: FSMContext, today: str):
     await state.update_data(city=city)
 
     try:
-        weather = get_weather(city=city)
+        weather = await get_weather(city=city)
 
         await message.answer(
             f"Твой город: {city}!\n"
@@ -47,7 +55,8 @@ async def handle_text_location(message: Message, state: FSMContext, today: str):
             f"Отличный день, чтобы прогуляться с кофе!",
             reply_markup=ReplyKeyboardRemove()
         )
-    except:
+    except httpx.HTTPStatusError as e:
+        logger.error(f'API error: {e}')
         await message.answer(
             "К сожалению, я не вижу какая сегодня погода, но все равно могу помочь!",
             reply_markup=ReplyKeyboardRemove()
@@ -64,19 +73,19 @@ async def handle_subway(message: Message, state: FSMContext):
 
     user_data = await state.get_data()
     try:
-        result = get_location(city=user_data.get('city'), location=f'станция метро {subway}')
+        result = await get_location(city=user_data.get('city'), location=f'станция метро {subway}')
         lat, lon = result['geometry']['lat'], result['geometry']['lng']
         await state.update_data(address={'lat': lat, 'lon': lon})
 
         await message.answer(
-            text=f"Отлично!\n{result['name']}\nИщу заведения в 10-15 минутах ходьбы...",
+            text=f"Отлично!\n{result['name']}\n\nИщу заведения в 10-15 минутах ходьбы...",
         )
 
         await send_places_on_map(message, lat, lon, state)
 
     except Exception as e:
+        logger.error(f'Unknown error: {e}')
         await message.answer(text=f"Кажется, сегодня не работаю(\nЗагляните в другой день")
-        raise e
 
     await state.update_data()
 

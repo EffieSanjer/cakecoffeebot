@@ -1,4 +1,5 @@
 from aiogram import Router, types, F
+from aiogram.filters import StateFilter
 from aiogram.filters.command import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -32,9 +33,8 @@ async def stop_fsm(message: Message, state: FSMContext):
     )
 
 
-# @start_router.message(F.text)
-# async def handle_incorrectly(message: Message):
-#     await message.answer(
-#         text="Я Вас не понял, давайте попробуем еще раз.\n"
-#              "Пожалуйста, напишите еще раз."
-#     )
+@start_router.message(StateFilter(None))
+async def handle_incorrectly(message: Message):
+    await message.answer(
+        text="Сценарий пуст! Чтобы начать снова, введите любую команду, например /start\n"
+    )

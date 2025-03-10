@@ -60,7 +60,7 @@ class PlaceDao(BaseDao):
         record = result.scalars().first()
 
         if record is None:
-            raise PlaceNotFoundException
+            raise PlaceNotFoundException(place_id=place_id)
 
         return record
 

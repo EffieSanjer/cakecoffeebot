@@ -5,6 +5,8 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from src.bot import logger
+from src.db.exceptions import PlaceNotFoundException
 from src.tg_bot.fsm import LocationState
 from src.core.rating_use_case import rating_use_case
 
@@ -29,7 +31,14 @@ async def handle_rate_location(message: Message, state: FSMContext):
         'place_gis_id': re.search(r'\d{6,}', link)[0],
         'rating': rating
     }
-    rating = await rating_use_case.create_rating(rating_data=rating_data)
 
-    await message.answer(f"Оценка для заведения <b>{rating['place']['title']}</b> добавлена успешно.")
-    await state.clear()
+    try:
+        rating = await rating_use_case.create_rating(rating_data=rating_data)
+        await message.answer(f"Оценка для заведения <b>{rating['place']['title']}</b> добавлена успешно.")
+    except PlaceNotFoundException as e:
+        logger.error(f'PlaceNotFound error: {e}')
+        await message.answer(f"Заведение не найдено(")
+    except Exception as e:
+        logger.error(f'Unknown error: {e}')
+    finally:
+        await state.clear()

@@ -1,28 +1,29 @@
-import requests
+from httpx import AsyncClient
 
 from src.config import settings
 
 
-def get_weather(city: str = None, lat: float = None, lon: float = None):
-    # TODO: closest big city
+async def get_weather(city: str = None, lat: float = None, lon: float = None) -> dict:
     query = {"q": "Москва,Россия"}
+    # TODO: closest big city
 
     if city:
         query = {"q": f"{city},Россия"}
     elif lat and lon:
-        query = {
-            "lat": lat,
-            "lon": lon
-        }
+        query = {"lat": lat, "lon": lon}
 
-    response = requests.get(f"https://api.openweathermap.org/data/2.5/weather", {
-        "appid": settings.WEATHER_API_KEY,
-        "lang": "ru",
-        "units": "metric",
-        **query
-    }, timeout=(5, 20))
+    async with AsyncClient() as client:
+        response = await client.get(
+            url="https://api.openweathermap.org/data/2.5/weather",
+            params={
+                "appid": settings.WEATHER_API_KEY,
+                "lang": "ru",
+                "units": "metric",
+                **query
+            })
 
-    data = response.json()
+        response.raise_for_status()
+        data = response.json()
 
     return {
         "city": data['name'],
