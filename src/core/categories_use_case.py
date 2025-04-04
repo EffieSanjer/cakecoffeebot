@@ -1,6 +1,6 @@
-from src.db.dao.dao import CategoryDao
-from src.db.database import connection
-from src.db.schemas import CategoryPydantic
+from db.dao.dao import CategoryDao
+from db.database import connection
+from db.schemas import CategoryPydantic
 
 
 class CategoryUseCase:

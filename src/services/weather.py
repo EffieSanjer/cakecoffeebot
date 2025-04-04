@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from src.config import settings
+from  config import settings
 
 
 async def get_weather(city: str = None, lat: float = None, lon: float = None) -> dict:

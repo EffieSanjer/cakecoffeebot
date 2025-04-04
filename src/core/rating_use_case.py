@@ -1,6 +1,6 @@
-from src.db.dao.dao import RatingDao
-from src.db.database import connection
-from src.db.schemas import RatingCreatePydantic, RatingPydantic
+from  db.dao.dao import RatingDao
+from  db.database import connection
+from  db.schemas import RatingCreatePydantic, RatingPydantic
 
 
 class RatingUseCase:

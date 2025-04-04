@@ -3,8 +3,8 @@ from datetime import datetime
 
 from aiogram.types import BotCommand, BotCommandScopeDefault
 
-from src.bot import bot, admins, dp
-from src.tg_bot.handlers import add_location_router, start_router, rate_location_router, get_locations_router
+from bot import bot, admins, dp
+from tg_bot.handlers import add_location_router, start_router, rate_location_router, get_locations_router
 
 
 async def set_commands():

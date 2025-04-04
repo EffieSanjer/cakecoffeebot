@@ -1,10 +1,10 @@
 import httpx
 
-from src.bot import logger
-from src.db.exceptions import PlaceNotFoundException
-from src.services.geolocation import get_map_image
-from src.tg_bot.keyboards.place_kbs import generate_places_kb
-from src.core.places_use_case import place_use_case
+from  bot import logger
+from  db.exceptions import PlaceNotFoundException
+from  services.geolocation import get_map_image
+from  tg_bot.keyboards.place_kbs import generate_places_kb
+from  core.places_use_case import place_use_case
 
 
 async def send_places_on_map(message, lat, lon, state):
@@ -27,8 +27,6 @@ async def send_places_on_map(message, lat, lon, state):
     except httpx.HTTPStatusError as e:
         logger.error(f'API error: {e}')
         await message.answer(text=f"Вот список ближайших мест:", reply_markup=generate_places_kb(places))
-    finally:
-        await state.clear()
 
 
 async def callback_str_place_info(place_id):

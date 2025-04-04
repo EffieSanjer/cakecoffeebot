@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.core.events_use_case import event_use_case
+from  core.events_use_case import event_use_case
 
 
 def get_closest_events():

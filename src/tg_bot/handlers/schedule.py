@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.services.schedule import get_closest_events, add_event
+from  services.schedule import get_closest_events, add_event
 
 router = Router()
 

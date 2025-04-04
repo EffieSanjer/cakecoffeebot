@@ -2,8 +2,8 @@ import re
 
 import requests
 
-from src.config import settings
-from src.core.places_use_case import place_use_case
+from  config import settings
+from  core.places_use_case import place_use_case
 
 
 def get_2gis_location(city: str = "Москва", location: str = None, lat: float = None, lon: float = None):

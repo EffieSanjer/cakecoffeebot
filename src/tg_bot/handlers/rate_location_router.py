@@ -5,10 +5,10 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot import logger
-from src.db.exceptions import PlaceNotFoundException
-from src.tg_bot.fsm import LocationState
-from src.core.rating_use_case import rating_use_case
+from  bot import logger
+from  db.exceptions import PlaceNotFoundException
+from  tg_bot.fsm import LocationState
+from  core.rating_use_case import rating_use_case
 
 router = Router()
 

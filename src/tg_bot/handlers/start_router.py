@@ -4,8 +4,8 @@ from aiogram.filters.command import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.tg_bot.fsm import LocationState
-from src.tg_bot.keyboards.kbs import location_kb
+from  tg_bot.fsm import LocationState
+from  tg_bot.keyboards.kbs import location_kb
 
 start_router = Router()
 
@@ -33,8 +33,8 @@ async def stop_fsm(message: Message, state: FSMContext):
     )
 
 
-@start_router.message(StateFilter(None))
-async def handle_incorrectly(message: Message):
-    await message.answer(
-        text="Сценарий пуст! Чтобы начать снова, введите любую команду, например /start\n"
-    )
+# @start_router.message(StateFilter(None))
+# async def handle_incorrectly(message: Message):
+#     await message.answer(
+#         text="Сценарий пуст! Чтобы начать снова, введите любую команду, например /start\n"
+#     )

@@ -4,9 +4,9 @@ import re
 import httpx
 from httpx import AsyncClient
 
-from src.config import settings
-from src.core.places_use_case import place_use_case
-from src.services.gis import get_2gis_location, add_2gis_location
+from config import settings
+from core.places_use_case import place_use_case
+from services.gis import get_2gis_location, add_2gis_location
 
 
 async def get_location(city: str = "Москва", location: str = None, lat: float = None, lon: float = None):

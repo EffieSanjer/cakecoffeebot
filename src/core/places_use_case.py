@@ -2,9 +2,9 @@ from datetime import datetime
 
 import pytz
 
-from src.db.dao.dao import PlaceDao
-from src.db.database import connection
-from src.db.schemas import PlaceCreatePydantic, PlacePydantic
+from db.dao.dao import PlaceDao
+from db.database import connection
+from db.schemas import PlaceCreatePydantic, PlacePydantic
 
 
 class PlaceUseCase:

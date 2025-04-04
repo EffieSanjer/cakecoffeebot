@@ -3,12 +3,12 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from src.bot import logger
-from src.services.geolocation import get_location
-from src.services.weather import get_weather
-from src.tg_bot.fsm import LocationState
-from src.tg_bot.keyboards.place_kbs import NumbersCallbackFactory, generate_places_kb
-from src.tg_bot.utils import send_places_on_map, callback_str_place_info
+from  bot import logger
+from  services.geolocation import get_location
+from  services.weather import get_weather
+from  tg_bot.fsm import LocationState
+from  tg_bot.keyboards.place_kbs import NumbersCallbackFactory, generate_places_kb
+from  tg_bot.utils import send_places_on_map, callback_str_place_info
 
 router = Router()
 

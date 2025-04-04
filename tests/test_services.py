@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from src.services.weather import get_weather
+from  services.weather import get_weather
 
 
 @pytest.mark.parametrize('city, lat, lon', [

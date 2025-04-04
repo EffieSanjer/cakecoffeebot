@@ -3,19 +3,18 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from src.bot import logger
-from src.config import settings
-from src.db.exceptions import PlaceAlreadyExistsException
-from src.services.geolocation import add_new_location
-from src.tg_bot.fsm import LocationState
-from src.core.categories_use_case import category_use_case
+from bot import logger
+from config import settings
+from core.categories_use_case import category_use_case
+from db.exceptions import PlaceAlreadyExistsException
+from services.geolocation import add_new_location
+from tg_bot.fsm import LocationState
 
 router = Router()
 
 
 @router.message(Command("add"), F.chat.id == settings.ADMINS_TG_ID[0])
 async def cmd_add_location(message: Message, state: FSMContext):
-    await state.clear()
     categories = await category_use_case.get_categories(by_names=True)
 
     await message.answer(

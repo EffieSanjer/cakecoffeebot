@@ -5,9 +5,9 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.db.dao.base import BaseDao
-from src.db.exceptions import PlaceNotFoundException, PlaceAlreadyExistsException
-from src.db.models import Place, Category, Event, Rating
+from db.dao.base import BaseDao
+from db.exceptions import PlaceNotFoundException, PlaceAlreadyExistsException
+from db.models import Place, Category, Event, Rating
 
 
 class CategoryDao(BaseDao):

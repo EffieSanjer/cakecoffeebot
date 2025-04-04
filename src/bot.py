@@ -5,8 +5,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram_sqlite_storage.sqlitestore import SQLStorage
 
-from src.config import settings
-
+from config import settings
 
 admins = [admin_id for admin_id in settings.ADMINS_TG_ID]
 

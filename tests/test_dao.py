@@ -5,9 +5,9 @@ import pytest_asyncio
 from pydantic import create_model
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.dao.dao import PlaceDao, RatingDao, CategoryDao, EventDao
-from src.db.models import Category, Place, Event
-from src.db.schemas import PlaceCreatePydantic, CategoryPydantic, RatingCreatePydantic
+from  db.dao.dao import PlaceDao, RatingDao, CategoryDao, EventDao
+from  db.models import Category, Place, Event
+from  db.schemas import PlaceCreatePydantic, CategoryPydantic, RatingCreatePydantic
 
 CATEGORIES_DATA = [
     CategoryPydantic(name="Breakfasts"),

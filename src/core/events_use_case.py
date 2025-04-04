@@ -1,6 +1,6 @@
-from src.db.dao.dao import EventDao
-from src.db.database import connection
-from src.db.schemas import EventPydantic
+from  db.dao.dao import EventDao
+from  db.database import connection
+from  db.schemas import EventPydantic
 
 
 class EventUseCase:
